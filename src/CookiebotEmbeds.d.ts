@@ -1,5 +1,5 @@
-// CookiebotMarketingEmbeds.d.ts
-interface CookiebotMarketingEmbedsConfig {
+// CookiebotEmbeds.d.ts
+interface CookiebotEmbedsConfig {
   showSourceURL?: boolean;
   headingText?: {
     default?: string;
@@ -15,8 +15,8 @@ interface CookiebotMarketingEmbedsConfig {
   gap?: string;
 }
 
-// CookiebotMarketingEmbeds.d.ts
-interface CookiebotMarketingEmbedsConfig {
+// CookiebotEmbeds.d.ts
+interface CookiebotEmbedsConfig {
   showSourceURL?: boolean;
   headingText?: {
     default?: string;
@@ -33,8 +33,8 @@ interface CookiebotMarketingEmbedsConfig {
   customCSS?: string;
 }
 
-export default class CookiebotMarketingEmbeds {
-  constructor(customConfig?: CookiebotMarketingEmbedsConfig);
+export default class CookiebotEmbeds {
+  constructor(customConfig?: CookiebotEmbedsConfig);
 
   // Include any public methods here as well. For instance:
   // init(): void;

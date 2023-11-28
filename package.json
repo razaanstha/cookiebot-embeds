@@ -5,6 +5,12 @@
   "main": "dist/cookiebot-embeds.umd.js",
   "module": "dist/cookiebot-embeds.es.js",
   "types": "src/cookiebot-marketing-embeds.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/cookiebot-embeds.es.js",
+      "require": "./dist/cookiebot-embeds.umd.js"
+    }
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build"

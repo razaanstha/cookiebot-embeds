@@ -7,7 +7,7 @@
  * It's designed to be a part of a larger system for managing user consents in compliance with GDPR and similar regulations.
  *
  */
-class CookiebotMarketingEmbeds {
+class CookiebotEmbeds {
   constructor(customConfig = {}) {
     // Default configuration
     this.config = {
