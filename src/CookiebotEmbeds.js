@@ -5,9 +5,26 @@
  * This class provides a solution for integrating Cookiebot consent management in a web environment,
  * specifically targeting the handling of marketing cookies for embedded content like YouTube videos.
  * It's designed to be a part of a larger system for managing user consents in compliance with GDPR and similar regulations.
- *
+ * @class
  */
 class CookiebotEmbeds {
+  /**
+   * Creates an instance of CookiebotEmbeds.
+   * @param {Object} [customConfig={}] - Custom configuration object for the CookiebotEmbeds.
+   * @param {boolean} [customConfig.showSourceURL=true] - Determines if the source URL should be shown.
+   * @param {Object} [customConfig.headingText] - Text for various headings based on content type.
+   * @param {string} [customConfig.headingText.default="To access this content, please enable marketing cookies."] - Default heading text.
+   * @param {string} [customConfig.headingText.youtube="To play this video, please enable marketing cookies required by YouTube."] - YouTube-specific heading text.
+   * @param {string} [customConfig.acceptButtonText="Accept marketing cookies"] - Text for the accept cookies button.
+   * @param {string} [customConfig.openCookiebotSettingsButtonText="Open Cookiebot Settings"] - Text for the button to open Cookiebot settings.
+   * @param {string} [customConfig.background="rgba(0, 0, 0, 0.7)"] - Background color.
+   * @param {string} [customConfig.textColor="white"] - Text color.
+   * @param {string} [customConfig.buttonBackgroundColor="#88b364"] - Background color of the button.
+   * @param {string} [customConfig.buttonBackgroundColorHover="#6e9e4f"] - Hover background color of the button.
+   * @param {string} [customConfig.buttonTextColor="white"] - Text color of the button.
+   * @param {string} [customConfig.gap="15px"] - Gap between elements.
+   * @param {string} [customConfig.customCSS=""] - Additional custom CSS.
+   */
   constructor(customConfig = {}) {
     // Default configuration
     this.config = {
@@ -33,13 +50,17 @@ class CookiebotEmbeds {
     this.init();
   }
 
-  // Initialize the library
+  /**
+   * Initializes the library by checking cookie consent and setting up event listeners.
+   */
   init() {
     this.checkConsentAndUpdateIframes();
     this.setupEventListeners();
   }
 
-  // Check Cookiebot consent and update marketing iframes
+  /**
+   * Checks the Cookiebot consent and updates iframes accordingly.
+   */
   checkConsentAndUpdateIframes() {
     if (typeof Cookiebot !== "undefined" && !Cookiebot.consent.marketing) {
       let marketingIframes = document.querySelectorAll(
@@ -70,7 +91,11 @@ class CookiebotEmbeds {
     }
   }
 
-  // Create the iframe source document
+  /**
+   * Creates a source document for an iframe based on the provided source URL.
+   * @param {string} source - The source URL for the iframe.
+   * @returns {string} HTML string representing the iframe source document.
+   */
   createIframeSourceDocument(source) {
     const cookiebotConsentConfig = this.config;
 
@@ -218,7 +243,9 @@ class CookiebotEmbeds {
           </script>`;
   }
 
-  // Setup event listeners
+  /**
+   * Sets up various event listeners for handling Cookiebot events and iframe messages.
+   */
   setupEventListeners() {
     const that = this;
     // Check for Cookiebot onAccept event and if marketing cookies are not accepted
@@ -245,7 +272,10 @@ class CookiebotEmbeds {
     window.addEventListener("load", this.onDocumentLoad.bind(this));
   }
 
-  // Handle document load
+  /**
+   * Handles actions to be performed when the document is loaded.
+   * This includes checking if Cookiebot is loaded and updating iframes.
+   */
   onDocumentLoad() {
     // Check if Cookiebot is loaded
     if (typeof Cookiebot === "undefined") {
@@ -258,7 +288,10 @@ class CookiebotEmbeds {
     window.addEventListener("message", this.handleIframeMessages.bind(this));
   }
 
-  // Handle iframe messages
+  /**
+   * Handles messages received from iframes, particularly those related to Cookiebot actions.
+   * @param {Event} e - The event object containing the message data.
+   */
   handleIframeMessages(e) {
     if (e.data === "open_cookiebot") {
       Cookiebot.show();
