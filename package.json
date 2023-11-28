@@ -1,0 +1,22 @@
+{
+  "name": "cookiebot-embeds",
+  "version": "1.0",
+  "description": "A library for managing external embeds when using Cookiebot to ask for consent within the iframe.",
+  "main": "dist/cookiebot-embeds.umd.js",
+  "module": "dist/cookiebot-embeds.es.js",
+  "types": "src/cookiebot-marketing-embeds.d.ts",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "keywords": ["cookiebot", "gdpr", "marketing", "embeds", "consent"],
+  "author": "Rajan Shrestha",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/razaanstha/cookiebot-embeds"
+  },  
+  "devDependencies": {
+    "vite": "^5.0.0"
+  }
+}
