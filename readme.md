@@ -1,6 +1,8 @@
 # CookiebotEmbeds
+![Asking user to accept marketing cookies to play youtube video.](screenshot.png)
+Inform your users that they have not accepted the required cookies correcly to run the Youtube and embeds from other services which you sites depends upon. It supports YouTube and for other iframe emebeds it just shows accept the cookies to view this source.
 
-CookiebotEmbeds is a JavaScript library designed to manage marketing cookie consents in web applications, particularly for embedded content such as YouTube videos. It ensures compliance with GDPR and similar data protection regulations by dynamically updating embedded content based on the user's cookie consent status.
+ CookiebotEmbeds is a JavaScript library designed to manage marketing cookie consents in web applications, particularly for embedded content such as YouTube videos. It ensures compliance with GDPR and similar data protection regulations by dynamically updating embedded content based on the user's cookie consent status.
 
 ## Features
 
