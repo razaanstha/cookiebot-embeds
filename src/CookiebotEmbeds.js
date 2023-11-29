@@ -234,6 +234,8 @@ class CookiebotEmbeds {
   
                   // Check if the anchor link is a marketing cookie link
                   if (a.getAttribute("href") === "#accept_marketing") {
+                      // Prevent default action
+                      e.preventDefault();
                       // Inform parent window to accept marketing cookies
                       window.parent.postMessage("accept_marketing", "*");
                   }
