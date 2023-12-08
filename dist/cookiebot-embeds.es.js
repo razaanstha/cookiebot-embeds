@@ -46,7 +46,7 @@ class s {
    * Checks the Cookiebot consent and updates iframes accordingly.
    */
   checkConsentAndUpdateIframes() {
-    if (typeof Cookiebot < "u" && !Cookiebot.consent.marketing) {
+    if (typeof Cookiebot < "u" && Cookiebot && "consent" in Cookiebot && Cookiebot.consent && "marketing" in Cookiebot.consent && !Cookiebot.consent.marketing) {
       let t = document.querySelectorAll(
         "iframe.consent-frame, iframe.cookieconsent-optin-marketing, iframe[data-src*='youtube.com/embed'],[data-src*='youtube-nocookie.com/embed']"
       );
@@ -193,6 +193,8 @@ class s {
   
                   // Check if the anchor link is a marketing cookie link
                   if (a.getAttribute("href") === "#accept_marketing") {
+                      // Prevent default action
+                      e.preventDefault();
                       // Inform parent window to accept marketing cookies
                       window.parent.postMessage("accept_marketing", "*");
                   }
@@ -210,10 +212,7 @@ class s {
       Cookiebot.consent.marketing || t.checkConsentAndUpdateIframes();
     }), window.addEventListener("CookiebotOnDecline", function(e) {
       Cookiebot.consent.marketing || t.checkConsentAndUpdateIframes();
-    }), window.addEventListener(
-      "popstate",
-      this.checkConsentAndUpdateIframes.bind(this)
-    ), window.addEventListener("load", this.onDocumentLoad.bind(this));
+    }), window.addEventListener("popstate", this.checkConsentAndUpdateIframes.bind(this)), window.addEventListener("load", this.onDocumentLoad.bind(this));
   }
   /**
    * Handles actions to be performed when the document is loaded.
@@ -221,9 +220,7 @@ class s {
    */
   onDocumentLoad() {
     if (typeof Cookiebot > "u")
-      return console.warn(
-        "Cookiebot is not loaded. Please add the Cookiebot script to the page."
-      );
+      return console.warn("Cookiebot is not loaded. Please add the Cookiebot script to the page.");
     this.checkConsentAndUpdateIframes(), window.addEventListener("message", this.handleIframeMessages.bind(this));
   }
   /**

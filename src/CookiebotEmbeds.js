@@ -30,19 +30,18 @@ class CookiebotEmbeds {
     this.config = {
       showSourceURL: true,
       headingText: {
-        default: "To access this content, please enable marketing cookies.",
-        youtube:
-          "To play this video, please enable marketing cookies required by YouTube.",
+        default: 'To access this content, please enable marketing cookies.',
+        youtube: 'To play this video, please enable marketing cookies required by YouTube.',
       },
-      acceptButtonText: "Accept marketing cookies",
-      openCookiebotSettingsButtonText: "Open Cookiebot Settings",
-      background: "rgba(0, 0, 0, 0.7)",
-      textColor: "white",
-      buttonBackgroundColor: "#88b364",
-      buttonBackgroundColorHover: "#6e9e4f",
-      buttonTextColor: "white",
-      gap: "15px",
-      customCSS: "",
+      acceptButtonText: 'Accept marketing cookies',
+      openCookiebotSettingsButtonText: 'Open Cookiebot Settings',
+      background: 'rgba(0, 0, 0, 0.7)',
+      textColor: 'white',
+      buttonBackgroundColor: '#88b364',
+      buttonBackgroundColorHover: '#6e9e4f',
+      buttonTextColor: 'white',
+      gap: '15px',
+      customCSS: '',
       // Merge user-provided config
       ...customConfig,
     };
@@ -62,29 +61,37 @@ class CookiebotEmbeds {
    * Checks the Cookiebot consent and updates iframes accordingly.
    */
   checkConsentAndUpdateIframes() {
-    if (typeof Cookiebot !== "undefined" && !Cookiebot.consent.marketing) {
+    // Check if Cookiebot is loaded properly and if marketing cookies are accepted more precisely
+    if (
+      typeof Cookiebot !== 'undefined' &&
+      Cookiebot &&
+      'consent' in Cookiebot &&
+      Cookiebot.consent &&
+      'marketing' in Cookiebot.consent &&
+      !Cookiebot.consent.marketing
+    ) {
       let marketingIframes = document.querySelectorAll(
         "iframe.consent-frame, iframe.cookieconsent-optin-marketing, iframe[data-src*='youtube.com/embed'],[data-src*='youtube-nocookie.com/embed']"
       );
       marketingIframes.forEach((iframe) => {
-        if (!iframe.hasAttribute("srcdoc")) {
+        if (!iframe.hasAttribute('srcdoc')) {
           let src =
-            iframe.getAttribute("src") ||
-            iframe.getAttribute("data-cookieblock-src") ||
-            iframe.getAttribute("data-src");
+            iframe.getAttribute('src') ||
+            iframe.getAttribute('data-cookieblock-src') ||
+            iframe.getAttribute('data-src');
 
           iframe.srcdoc = this.createIframeSourceDocument(src);
-          iframe.style.display = "block";
+          iframe.style.display = 'block';
         }
       });
 
       // Listen for Cookiebot onAccept event
-      window.addEventListener("CookiebotOnAccept", function (e) {
+      window.addEventListener('CookiebotOnAccept', function (e) {
         // Check if marketing cookies are accepted
         if (Cookiebot.consent.marketing) {
           // Loop through all youtube embeds and remove the srcdoc attribute
           marketingIframes.forEach((marketingIframe) => {
-            marketingIframe.removeAttribute("srcdoc");
+            marketingIframe.removeAttribute('srcdoc');
           });
         }
       });
@@ -99,14 +106,14 @@ class CookiebotEmbeds {
   createIframeSourceDocument(source) {
     const cookiebotConsentConfig = this.config;
 
-    if (!source) return "";
+    if (!source) return '';
     // get the host name of the source without subdomain
     let sourceHost = new URL(source).hostname;
 
     let sourceElement =
       cookiebotConsentConfig.showSourceURL && source
         ? `<a href="${source}" class="source" target="_blank" rel="nofollow noopener" aria-label="Open in new tab">${source}</a>`
-        : "";
+        : '';
     let headline_text = cookiebotConsentConfig.headingText.default;
 
     // Check if the sourceHost contains any key from cookiebotConsentConfig
@@ -251,27 +258,24 @@ class CookiebotEmbeds {
   setupEventListeners() {
     const that = this;
     // Check for Cookiebot onAccept event and if marketing cookies are not accepted
-    window.addEventListener("CookiebotOnAccept", function (e) {
+    window.addEventListener('CookiebotOnAccept', function (e) {
       if (!Cookiebot.consent.marketing) {
         that.checkConsentAndUpdateIframes();
       }
     });
 
     // Check for Cookiebot onDecline event and if marketing cookies are not accepted
-    window.addEventListener("CookiebotOnDecline", function (e) {
+    window.addEventListener('CookiebotOnDecline', function (e) {
       if (!Cookiebot.consent.marketing) {
         that.checkConsentAndUpdateIframes();
       }
     });
 
     // When the user navigates back in history, check for consent and update marketing iframes
-    window.addEventListener(
-      "popstate",
-      this.checkConsentAndUpdateIframes.bind(this)
-    );
+    window.addEventListener('popstate', this.checkConsentAndUpdateIframes.bind(this));
 
     // When the document is loaded, check for consent and update marketing iframes
-    window.addEventListener("load", this.onDocumentLoad.bind(this));
+    window.addEventListener('load', this.onDocumentLoad.bind(this));
   }
 
   /**
@@ -280,14 +284,12 @@ class CookiebotEmbeds {
    */
   onDocumentLoad() {
     // Check if Cookiebot is loaded
-    if (typeof Cookiebot === "undefined") {
-      return console.warn(
-        "Cookiebot is not loaded. Please add the Cookiebot script to the page."
-      );
+    if (typeof Cookiebot === 'undefined') {
+      return console.warn('Cookiebot is not loaded. Please add the Cookiebot script to the page.');
     }
 
     this.checkConsentAndUpdateIframes();
-    window.addEventListener("message", this.handleIframeMessages.bind(this));
+    window.addEventListener('message', this.handleIframeMessages.bind(this));
   }
 
   /**
@@ -295,10 +297,10 @@ class CookiebotEmbeds {
    * @param {Event} e - The event object containing the message data.
    */
   handleIframeMessages(e) {
-    if (e.data === "open_cookiebot") {
+    if (e.data === 'open_cookiebot') {
       Cookiebot.show();
     }
-    if (e.data === "accept_marketing") {
+    if (e.data === 'accept_marketing') {
       Cookiebot.submitCustomConsent(
         Cookiebot.consent.preferences,
         Cookiebot.consent.statistics,
