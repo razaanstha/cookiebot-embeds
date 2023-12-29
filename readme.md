@@ -1,8 +1,8 @@
-# CookiebotEmbeds
+# CookiebotEmbeds (`cookiebot-embeds`)
 ![Asking user to accept marketing cookies to play youtube video.](screenshot.png)
 Inform your users that they have not accepted the required cookies correcly to run the Youtube and embeds from other services which you sites depends upon. It supports YouTube and for other iframe emebeds it just shows accept the cookies to view this source.
 
- CookiebotEmbeds is a JavaScript library designed to manage marketing cookie consents in web applications, particularly for embedded content such as YouTube videos. It ensures compliance with GDPR and similar data protection regulations by dynamically updating embedded content based on the user's cookie consent status.
+ CookiebotEmbeds (`cookiebot-embeds`) is a JavaScript library designed to manage marketing cookie consents in web applications, particularly for embedded content such as YouTube videos. It ensures compliance with GDPR and similar data protection regulations by dynamically updating embedded content based on the user's cookie consent status.
 
 ## Features
 
@@ -21,10 +21,13 @@ Inform your users that they have not accepted the required cookies correcly to r
 
 ### Installation
 
-Add the `CookiebotEmbeds.js` script to your project. 
+Begin by installing the `cookiebot-embeds` package in your project. Use either of the following commands based on your package manager:
+- For npm: `npm install cookiebot-embeds`
+- For yarn: `yarn add cookiebot-embeds`
 
+Next, create a new instance of CookiebotEmbeds. You can provide an optional custom configuration object as your requirement. For example:
 ```
-import CookiebotEmbeds from 'CookiebotEmbeds';
+import CookiebotEmbeds from 'cookiebot-embeds';
 
 const embeds = new CookiebotEmbeds({
     // Custom configuration options
@@ -63,7 +66,6 @@ const embeds = new CookiebotEmbeds({
     textColor: "white",
     buttonBackgroundColor: "#88b364",
     buttonBackgroundColorHover: "#6e9e4f",
-
     buttonTextColor: "white",
     gap: "12px",
     customCSS: ""
@@ -72,4 +74,4 @@ const embeds = new CookiebotEmbeds({
 
 This configuration object allows users to customize the appearance and behavior of the library according to their specific needs and website design.
 
-This section of the README explains the configuration options available in the `CookiebotEmbeds` library, providing users with the information they need to tailor the library to their specific requirements.
+This section of the README explains the configuration options available in the `cookiebot-embeds` library, providing users with the information they need to tailor the library to their specific requirements.
