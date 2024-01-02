@@ -1,16 +1,23 @@
 # CookiebotEmbeds (`cookiebot-embeds`)
-![Asking user to accept marketing cookies to play youtube video.](screenshot.png)
-Inform your users that they have not accepted the required cookies correcly to run the Youtube and embeds from other services which you sites depends upon. It supports YouTube and for other iframe emebeds it just shows accept the cookies to view this source.
 
- CookiebotEmbeds (`cookiebot-embeds`) is a JavaScript library designed to manage marketing cookie consents in web applications, particularly for embedded content such as YouTube videos. It ensures compliance with GDPR and similar data protection regulations by dynamically updating embedded content based on the user's cookie consent status.
+![Asking user to accept marketing cookies to play youtube video.](screenshot.png)
+`cookiebot-embeds` is a JavaScript library designed to manage marketing cookie consents in web applications, particularly for embedded content such as YouTube videos and other iframe embeds. It ensures compliance with GDPR and similar data protection regulations by dynamically updating embedded content based on the user's cookie consent status.
 
 ## Features
 
-- **Dynamic Consent Management**: Automatically updates embedded marketing content (like iframes) based on user's cookie consent. 
-- **Customizable UI**: Offers various customization options for messages, buttons, and styles to align with the website's aesthetics.
-- **Event-Driven Updates**: Reacts to browser events to ensure consent preferences are respected throughout the browsing session.
-- **Ease of Integration**: Easy to integrate with existing web applications with minimal configuration required.
-- **Responsive Design**: Compatible with various devices and screen sizes.
+- **Dynamic Consent Management**: Automatically updates the content of embedded marketing materials such as YouTube videos or other iframes based on the user's cookie consent. This ensures compliance while maintaining a seamless user experience.
+
+- **Customizable User Interface**: Offers extensive customization options for consent messages, buttons, and overall styles. This allows the library to be seamlessly integrated into any website design, maintaining brand consistency.
+
+- **Event-Driven Updates**: The library is highly responsive to browser and Cookiebot events, ensuring that user consent preferences are respected in real time throughout the browsing session.
+
+- **Ease of Integration**: Designed for easy integration with existing web applications, `CookiebotEmbeds` requires minimal setup and configuration, making it accessible to developers of varying skill levels.
+
+- **Responsive and Adaptive Design**: Fully compatible with a wide range of devices and screen sizes, ensuring that consent management is effective and user-friendly on any device.
+
+- **GDPR and Data Protection Compliance**: By managing marketing cookies and embedded content consents, the library helps in complying with GDPR and other data protection regulations, crucial for businesses operating in or targeting customers in the European Union.
+
+- **Enhanced User Experience**: Focuses on providing a non-intrusive yet clear consent management process, improving overall user experience while navigating through embedded content and cookie consent dialogs.
 
 ## Getting Started
 
@@ -26,7 +33,7 @@ Begin by installing the `cookiebot-embeds` package in your project. Use either o
 - For yarn: `yarn add cookiebot-embeds`
 
 Next, create a new instance of CookiebotEmbeds. You can provide an optional custom configuration object as your requirement. For example:
-```
+```javascript
 import CookiebotEmbeds from 'cookiebot-embeds';
 
 const embeds = new CookiebotEmbeds({
@@ -38,13 +45,16 @@ const embeds = new CookiebotEmbeds({
 
 The library accepts a configuration object with the following options:
 
-- `showSourceURL`: (boolean) Show the source URL of the embed. Default: true.
-- `headingText`: (object) Custom heading texts for different sources.
-- `buttonText`: (string) Text for the consent button.
-- `openCookiebotButtonText`: (string) Text for the button to open Cookiebot settings.
-- `backgroundColor`: (string) Background color of the message overlay.
+- `showSourceURL`: (boolean) Determines if the source URL should be shown. Default: true.
+- `headingText`: (object) Text for various headings based on content type.
+    - `default`: (string) Default heading text.
+    - `youtube`: (string) YouTube-specific heading text.
+- `acceptButtonText`: (string) Text for the accept cookies button.
+- `openCookiebotSettingsButtonText`: (string) Text for the button to open Cookiebot settings.
+- `background`: (string) Background color of the message overlay.
 - `textColor`: (string) Text color of the message.
 - `buttonBackgroundColor`: (string) Background color of the button.
+- `buttonBackgroundColorHover`: (string) Hover background color of the button.
 - `buttonTextColor`: (string) Text color of the button.
 - `gap`: (string) Gap between elements in the overlay.
 - `customCSS`: (string) Custom CSS to further style the overlay and its components.
@@ -56,22 +66,73 @@ const embeds = new CookiebotEmbeds({
     showSourceURL: true,
     headingText: {
         default: "To access this content, please enable marketing cookies.",
-        // For adding custom message just simply type the domain hostname without the 
-        // subdomain and extension and simply add like this for e.g www.youtube.com --> youtube
         youtube: "To play this video, please enable marketing cookies required by YouTube."
     },
-    buttonText: "Accept marketing cookies",
-    openCookiebotButtonText: "Open Cookiebot Settings",
+    acceptButtonText: "Accept marketing cookies",
+    openCookiebotSettingsButtonText: "Open Cookiebot Settings",
     background: "rgba(0, 0, 0, 0.7)",
     textColor: "white",
     buttonBackgroundColor: "#88b364",
     buttonBackgroundColorHover: "#6e9e4f",
     buttonTextColor: "white",
-    gap: "12px",
-    customCSS: ""
+    gap: "15px",
+    customCSS: `
+        body {
+            margin: 20px;
+        }
+    `
 });
 ```
 
-This configuration object allows users to customize the appearance and behavior of the library according to their specific needs and website design.
+## Default Configuration Values
 
-This section of the README explains the configuration options available in the `cookiebot-embeds` library, providing users with the information they need to tailor the library to their specific requirements.
+`cookiebot-embeds` is pre-configured with default values to ensure ease of use right out of the box. These values are designed to cover common use cases and can be overridden by passing a custom configuration object.
+
+Here are the default values for each configuration option:
+
+- `showSourceURL`: `true`
+  - By default, the source URL of the embed is shown. This can be helpful for transparency and trust.
+
+- `headingText`: 
+  - `default`: "To access this content, please enable marketing cookies."
+  - `youtube`: "To play this video, please enable marketing cookies required by YouTube."
+  - These texts are displayed as headings on the consent overlay, depending on the content type.
+
+- `acceptButtonText`: "Accept marketing cookies"
+  - The default text for the button to accept marketing cookies.
+
+- `openCookiebotSettingsButtonText`: "Open Cookiebot Settings"
+  - The default text for the button that opens Cookiebot settings.
+
+- `background`: "rgba(0, 0, 0, 0.7)"
+  - The default background color for the overlay is a semi-transparent black.
+
+- `textColor`: "white"
+  - The default text color is white, providing contrast against the dark background.
+
+- `buttonBackgroundColor`: "#88b364"
+  - The default background color for buttons is a shade of green.
+
+- `buttonBackgroundColorHover`: "#6e9e4f"
+  - On hover, the button background changes to a slightly darker green.
+
+- `buttonTextColor`: "white"
+  - The text color for buttons is white for readability.
+
+- `gap`: "15px"
+  - The default gap between elements in the overlay is 15 pixels.
+
+- `customCSS`: ""
+  - By default, no additional custom CSS is applied. This can be used to further customize the appearance.
+
+### Overriding Default Values
+
+To override these defaults, pass a custom configuration object when creating an instance of `CookiebotEmbeds`. For example:
+
+```javascript
+const embeds = new CookiebotEmbeds({
+    showSourceURL: false, // Hides the source URL
+    // ... other custom configurations
+});
+```
+

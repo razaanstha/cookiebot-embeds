@@ -126,8 +126,8 @@ class CookiebotEmbeds {
     return `<div role="dialog" aria-labelledby="cookiebot_marketing_required" id="info">
               <h1 id="cookiebot_marketing_required" class="heading">${headline_text}</h1>
               <div style="display: flex; flex-flow: row wrap; gap: inherit; justify-content: start;">
-                  <a href="#accept_marketing" class="btn">${cookiebotConsentConfig.acceptButtonText}</a>
-                  <a href="#open_cookiebot" class="btn">${cookiebotConsentConfig.openCookiebotSettingsButtonText}</a>
+                  <a href="#accept_marketing" class="btn btn--accept-marketing">${cookiebotConsentConfig.acceptButtonText}</a>
+                  <a href="#open_cookiebot" class="btn btn--open-settings">${cookiebotConsentConfig.openCookiebotSettingsButtonText}</a>
               </div>
           </div>
           ${sourceElement}

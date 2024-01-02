@@ -78,8 +78,8 @@ class s {
     }), `<div role="dialog" aria-labelledby="cookiebot_marketing_required" id="info">
               <h1 id="cookiebot_marketing_required" class="heading">${n}</h1>
               <div style="display: flex; flex-flow: row wrap; gap: inherit; justify-content: start;">
-                  <a href="#accept_marketing" class="btn">${e.acceptButtonText}</a>
-                  <a href="#open_cookiebot" class="btn">${e.openCookiebotSettingsButtonText}</a>
+                  <a href="#accept_marketing" class="btn btn--accept-marketing">${e.acceptButtonText}</a>
+                  <a href="#open_cookiebot" class="btn btn--open-settings">${e.openCookiebotSettingsButtonText}</a>
               </div>
           </div>
           ${a}
