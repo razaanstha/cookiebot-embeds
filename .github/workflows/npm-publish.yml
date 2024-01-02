@@ -1,19 +1,17 @@
-name: Publish npm package
-
+name: Publish Package to npmjs
 on:
-  push:
-    branches:
-      - main  # Set your default branch here
-
+  release:
+    types: [published]
 jobs:
-  publish:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@v4
+      # Setup .npmrc file to publish to npm
+      - uses: actions/setup-node@v3
         with:
-          node-version: '20'  # Set your Node.js version here
-          registry-url: 'https://npm.pkg.github.com'
+          node-version: '20.x'
+          registry-url: 'https://registry.npmjs.org'
       - run: npm ci
       - run: npm publish
         env:

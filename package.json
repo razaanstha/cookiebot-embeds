@@ -22,9 +22,6 @@
     "type": "git",
     "url": "https://github.com/razaanstha/cookiebot-embeds.git"
   },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
-  },
   "devDependencies": {
     "vite": "^5.0.0"
   }
