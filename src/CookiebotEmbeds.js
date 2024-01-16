@@ -3,9 +3,9 @@
  * --------------------------------
  *
  * This class provides a solution for integrating Cookiebot consent management in a web environment,
- * specifically targeting the handling of marketing cookies for embedded content like YouTube videos.
+ * specifically targeting the handling of preferences, statistics and marketing cookies for embedded content like YouTube emebds and different other sources.
  * It's designed to be a part of a larger system for managing user consents in compliance with GDPR and similar regulations.
- * @class
+ * @class CookiebotEmbeds
  */
 class CookiebotEmbeds {
   /**
@@ -13,27 +13,35 @@ class CookiebotEmbeds {
    * @param {Object} [customConfig={}] - Custom configuration object for the CookiebotEmbeds.
    * @param {boolean} [customConfig.showSourceURL=true] - Determines if the source URL should be shown.
    * @param {Object} [customConfig.headingText] - Text for various headings based on content type.
-   * @param {string} [customConfig.headingText.default="To access this content, please enable marketing cookies."] - Default heading text.
+   * @param {string} [customConfig.headingText.default="Enable [REQUIRED_COOKIES] cookies on Cookiebot settings to view this content."] - Default heading text.
    * @param {string} [customConfig.headingText.youtube="To play this video, please enable marketing cookies required by YouTube."] - YouTube-specific heading text.
-   * @param {string} [customConfig.acceptButtonText="Accept marketing cookies"] - Text for the accept cookies button.
+   * @param {Object} [customConfig.cookieCategoriesTitle] - Text for various cookie categories.
+   * @param {string} [customConfig.cookieCategoriesTitle.preferences="Preferences"] - Text for the preferences cookie category.
+   * @param {string} [customConfig.cookieCategoriesTitle.statistics="Statistics"] - Text for the statistics cookie category.
+   * @param {string} [customConfig.cookieCategoriesTitle.marketing="Marketing"] - Text for the marketing cookie category.
+   * @param {string} [customConfig.acceptButtonText="Accept required cookies"] - Text for the accept required cookies button.
    * @param {string} [customConfig.openCookiebotSettingsButtonText="Open Cookiebot Settings"] - Text for the button to open Cookiebot settings.
    * @param {string} [customConfig.background="rgba(0, 0, 0, 0.7)"] - Background color.
    * @param {string} [customConfig.textColor="white"] - Text color.
    * @param {string} [customConfig.buttonBackgroundColor="#88b364"] - Background color of the button.
    * @param {string} [customConfig.buttonBackgroundColorHover="#6e9e4f"] - Hover background color of the button.
-   * @param {string} [customConfig.buttonTextColor="white"] - Text color of the button.
    * @param {string} [customConfig.gap="15px"] - Gap between elements.
    * @param {string} [customConfig.customCSS=""] - Additional custom CSS.
    */
   constructor(customConfig = {}) {
     // Default configuration
-    this.config = {
+    const defaultConfig = {
       showSourceURL: true,
       headingText: {
-        default: 'To access this content, please enable marketing cookies.',
+        default: 'Enable [REQUIRED_COOKIES] cookies on Cookiebot settings to view this content.',
         youtube: 'To play this video, please enable marketing cookies required by YouTube.',
       },
-      acceptButtonText: 'Accept marketing cookies',
+      cookieCategoriesTitle: {
+        preferences: 'Preferences',
+        statistics: 'Statistics',
+        marketing: 'Marketing',
+      },
+      acceptButtonText: 'Accept required cookies',
       openCookiebotSettingsButtonText: 'Open Cookiebot Settings',
       background: 'rgba(0, 0, 0, 0.7)',
       textColor: 'white',
@@ -42,8 +50,20 @@ class CookiebotEmbeds {
       buttonTextColor: 'white',
       gap: '15px',
       customCSS: '',
-      // Merge user-provided config
+    };
+
+    // Merge default and custom configuration provided by the user
+    this.config = {
+      ...defaultConfig,
       ...customConfig,
+      headingText: {
+        ...defaultConfig.headingText,
+        ...customConfig.headingText,
+      },
+      cookieCategoriesTitle: {
+        ...defaultConfig.cookieCategoriesTitle,
+        ...customConfig.cookieCategoriesTitle,
+      },
     };
 
     this.init();
@@ -61,38 +81,68 @@ class CookiebotEmbeds {
    * Checks the Cookiebot consent and updates iframes accordingly.
    */
   checkConsentAndUpdateIframes() {
+    const that = this;
+
     // Check if Cookiebot is loaded properly and if marketing cookies are accepted more precisely
     if (
       typeof Cookiebot !== 'undefined' &&
       Cookiebot &&
       'consent' in Cookiebot &&
       Cookiebot.consent &&
-      'marketing' in Cookiebot.consent &&
-      !Cookiebot.consent.marketing
+      'preferences' in Cookiebot.consent &&
+      'statistics' in Cookiebot.consent &&
+      'marketing' in Cookiebot.consent
     ) {
-      let marketingIframes = document.querySelectorAll(
-        "iframe.consent-frame, iframe.cookieconsent-optin-marketing, iframe[data-src*='youtube.com/embed'],[data-src*='youtube-nocookie.com/embed']"
-      );
+      const marketingIframes = document.querySelectorAll('iframe[data-cookieconsent]');
+
+      // Get all the required consents for the iframe
+      const getNonConsentedCookieCategories = (requiredConsents) => {
+        return requiredConsents.filter((consent) => !Cookiebot.consent[consent]);
+      };
+
       marketingIframes.forEach((iframe) => {
-        if (!iframe.hasAttribute('srcdoc')) {
-          let src =
+        if (iframe.hasAttribute('data-cookieconsent')) {
+          // Show an info on iframe to enable all the cookies to display the iframe
+          const requiredConsents = getNonConsentedCookieCategories(
+            iframe.getAttribute('data-cookieconsent').split(',')
+          );
+
+          const src =
             iframe.getAttribute('src') ||
             iframe.getAttribute('data-cookieblock-src') ||
             iframe.getAttribute('data-src');
 
-          iframe.srcdoc = this.createIframeSourceDocument(src);
-          iframe.style.display = 'block';
+          // Check if cookiebot has all the required consents enabled and if not, set the srcdoc attribute
+          if (!requiredConsents.every((consent) => Cookiebot.consent[consent])) {
+            iframe.setAttribute('srcdoc', that.createIframeSourceDocument(src, requiredConsents));
+
+            setTimeout(() => {
+              iframe.style.display = 'block';
+            }, 150);
+          }
         }
       });
 
       // Listen for Cookiebot onAccept event
-      window.addEventListener('CookiebotOnAccept', function (e) {
-        // Check if marketing cookies are accepted
-        if (Cookiebot.consent.marketing) {
-          // Loop through all youtube embeds and remove the srcdoc attribute
-          marketingIframes.forEach((marketingIframe) => {
+      window.addEventListener('CookiebotOnAccept', function () {
+        let unsettledIframes = 0;
+        // Show an info on iframe to enable all the cookies to display the iframe
+        marketingIframes.forEach((marketingIframe) => {
+          const requiredConsents = getNonConsentedCookieCategories(
+            marketingIframe.getAttribute('data-cookieconsent').split(',')
+          );
+
+          // Check if cookiebot has all the required consents enabled and if not, set the srcdoc attribute
+          if (requiredConsents.every((consent) => Cookiebot.consent[consent])) {
             marketingIframe.removeAttribute('srcdoc');
-          });
+          } else {
+            unsettledIframes++;
+          }
+        });
+
+        // If there are still iframes with unset srcdoc, listen for Cookiebot onAccept event again and check if all the iframes have srcdoc set
+        if (unsettledIframes > 0) {
+          that.checkConsentAndUpdateIframes();
         }
       });
     }
@@ -101,11 +151,11 @@ class CookiebotEmbeds {
   /**
    * Creates a source document for an iframe based on the provided source URL.
    * @param {string} source - The source URL for the iframe.
+   * @param {string[]} requiredConsents - An array of required consents for the iframe.
    * @returns {string} HTML string representing the iframe source document.
    */
-  createIframeSourceDocument(source) {
+  createIframeSourceDocument(source, requiredConsents = []) {
     const cookiebotConsentConfig = this.config;
-
     if (!source) return '';
     // get the host name of the source without subdomain
     let sourceHost = new URL(source).hostname;
@@ -114,6 +164,7 @@ class CookiebotEmbeds {
       cookiebotConsentConfig.showSourceURL && source
         ? `<a href="${source}" class="source" target="_blank" rel="nofollow noopener" aria-label="Open in new tab">${source}</a>`
         : '';
+
     let headline_text = cookiebotConsentConfig.headingText.default;
 
     // Check if the sourceHost contains any key from cookiebotConsentConfig
@@ -123,23 +174,50 @@ class CookiebotEmbeds {
       }
     });
 
+    // Find and replace [REQUIRED_COOKIES] dynamic tags with requiredConsents
+    if (headline_text && headline_text.includes('[REQUIRED_COOKIES]') && requiredConsents) {
+      // Convert the requiredConsents array to a user provided string from the config
+      let requiredConsentsFromConfig = requiredConsents.map(
+        (consent) => cookiebotConsentConfig.cookieCategoriesTitle[consent]
+      );
+
+      headline_text = headline_text.replace(
+        '[REQUIRED_COOKIES]',
+
+        // add a comma after each required consent except the last one
+        requiredConsents && requiredConsents.length > 1
+          ? requiredConsentsFromConfig.join(', ').replace(/,(?=[^,]*$)/, ' &')
+          : requiredConsentsFromConfig[0]
+      );
+    }
+
     return `<div role="dialog" aria-labelledby="cookiebot_marketing_required" id="info">
-              <h1 id="cookiebot_marketing_required" class="heading">${headline_text}</h1>
-              <div style="display: flex; flex-flow: row wrap; gap: inherit; justify-content: start;">
-                  <a href="#accept_marketing" class="btn btn--accept-marketing">${cookiebotConsentConfig.acceptButtonText}</a>
-                  <a href="#open_cookiebot" class="btn btn--open-settings">${cookiebotConsentConfig.openCookiebotSettingsButtonText}</a>
-              </div>
-          </div>
-          ${sourceElement}
-          <style>
-              html, body {
-                  display: flex;
-                  min-height: 100%;
-              }
-  
-              body {
+                <h1 id="cookiebot_marketing_required" class="heading">${headline_text}</h1>
+                <div style="display: flex; flex-flow: row wrap; gap: calc(${cookiebotConsentConfig.gap} - (${cookiebotConsentConfig.gap} / 2)); justify-content: start;">
+                    <a href="#accept_required_cookies" class="btn btn--accept-required-cookies">
+                      ${cookiebotConsentConfig.acceptButtonText}
+                    </a>
+                    <a href="#open_cookiebot" class="btn btn--open-settings">${cookiebotConsentConfig.openCookiebotSettingsButtonText}</a>
+                </div>
+            </div>
+            <div class="loading__overlay" aria-hidden="true">
+              <svg class="loading__overlay--icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M10.72 19.9a8 8 0 0 1-6.5-9.79 7.77 7.77 0 0 1 6.18-5.95 8 8 0 0 1 9.49 6.52A1.54 1.54 0 0 0 21.38 12h.13a1.37 1.37 0 0 0 1.38-1.54 11 11 0 1 0-12.7 12.39A1.54 1.54 0 0 0 12 21.34a1.47 1.47 0 0 0-1.28-1.44Z"><animateTransform attributeName="transform" dur="0.75s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"/></path></svg>
+            </div>
+            ${sourceElement}
+            <style>
+                * {
+                  box-sizing: border-box;
+                }
+
+                html {
+                    height: 100%;
+                }
+                
+                body {
+                  margin: 0;
                   width: 100%;
-                  margin: 32px 20px;
+                  display: flex;
+                  padding: 32px 12px;
                   justify-content: center;
                   align-items: center;
                   background-color: ${cookiebotConsentConfig.background};
@@ -148,39 +226,40 @@ class CookiebotEmbeds {
                   font-family: sans-serif;
                   font-weight: 400;
                   line-height: 1.34;
-              }
-  
-              #info {
-                display: flex;
-                flex-direction: column;
-                gap: ${cookiebotConsentConfig.gap};
-                text-align: left;
-                max-width: 750px;
-              }
-  
-              a.source {
-                display: inline;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                max-width: 250px;
-                background: black;
-                font-size: 14px;
-                position: fixed;
-                top: 0;
-                left: 0;
-                padding: 5px 10px;
-                color: currentColor;
-                text-decoration: none;
-                opacity: .8;
-              }
-  
-              a.source:hover,
-              a.source:focus {
-                text-decoration: underline;
-              }
-  
-              .btn {
+                }
+    
+                #info {
+                  display: flex;
+                  flex-direction: column;
+                  gap: ${cookiebotConsentConfig.gap};
+                  text-align: left;
+                  max-width: 750px;
+                  overflow: hidden;
+                }
+    
+                a.source {
+                  display: inline;
+                  white-space: nowrap;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  max-width: 250px;
+                  background: black;
+                  font-size: 14px;
+                  position: fixed;
+                  top: 0;
+                  left: 0;
+                  padding: 5px 10px;
+                  color: currentColor;
+                  text-decoration: none;
+                  opacity: .8;
+                }
+    
+                a.source:hover,
+                a.source:focus {
+                  text-decoration: underline;
+                }
+    
+                .btn {
                   text-decoration: none; 
                   display: inline-flex;
                   font-family: sans-serif;
@@ -189,92 +268,129 @@ class CookiebotEmbeds {
                   color: ${cookiebotConsentConfig.buttonTextColor};
                   transition: all 0.2s ease;
                   border: none;
-              }
-  
-              .btn:hover {
-                background: ${cookiebotConsentConfig.buttonBackgroundColorHover};
-              }
-  
-              .heading {
-                font-family: sans-serif;
-                margin: 0;
-                font-size: 20px;
-              }
-  
-              @media screen and (min-width: 768px) {
-                body {
-                  margin: 30px;
                 }
-  
-                .btn {
-                  padding: 12px 20px;
+    
+                .btn:hover {
+                  background: ${cookiebotConsentConfig.buttonBackgroundColorHover};
                 }
-  
-                .heading {
-                  font-size: 36px;
-                }
-              }
 
-              a:focus-visible, button:focus-visible {
-                outline: 2px solid #005fcc;
-                background-color: #eef;
-                color: #005fcc;
-                transition: outline 0.3s ease, background-color 0.3s ease;
-              }            
-              
-              ${cookiebotConsentConfig.customCSS}
-          </style>
-          <script>
-          // Listen for all hash based anchor links
-          var anchor = document.querySelectorAll('a:not(.source)[href^="#"]');
-          if (anchor && anchor.length > 0) {
-              anchor.forEach((a) => {
+                .btn.btn--accept-required-cookies.loading {
+                  cursor: wait;
+                }
+    
+                .heading {
+                  font-family: sans-serif;
+                  margin: 0;
+                  font-size: 18px;
+                }
+    
+                @media screen and (min-width: 400px) {
+                  body {
+                    padding: 40px 30px 30px;
+                    min-height: 100%;
+                  }
+                }
+
+                @media screen and (min-width: 768px) {    
+                  .btn {
+                    padding: 12px 20px;
+                  }
+    
+                  .heading {
+                    font-size: 36px;
+                  }
+                }
+  
+                a.btn:focus-visible {
+                  outline: 2px solid #005fcc;
+                  background-color: #eef;
+                  color: #005fcc;
+                  transition: outline 0.3s ease, background-color 0.3s ease;
+                }            
+
+                .loading__overlay {
+                  position: fixed;
+                  top: 0;
+                  left: 0;
+                  right: 0;
+                  bottom: 0;
+                  z-index: 999;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  opacity: 0;
+                  visibility: hidden;
+                  justify-content: center;
+                  align-items: center;
+                  transition: opacity 0.3s ease, visibility 0.3s ease;
+                  background-color: ${cookiebotConsentConfig.background};
+                  color: ${cookiebotConsentConfig.textColor};
+                }
+
+                .loading__overlay--icon {
+                  width: 10vw;
+                  height: 10vw;
+                }
+
+                .loading__overlay.loading {
+                  opacity: 0.92;
+                  visibility: visible;
+                }
+                
+                ${cookiebotConsentConfig.customCSS}
+            </style>
+            <script>
+              // Listen for all hash based anchor links
+              var dialogOverlay = document.querySelector(".loading__overlay");
+              var anchor = document.querySelectorAll('a:not(.source)[href^="#"]');
+
+              if (anchor && anchor.length) {
+                anchor.forEach((a) => {
                   // Add click event listener to all hash based anchor links
                   a.addEventListener("click", function (e) {
-                  // Check if the anchor link is a cookiebot link
-                  if (a.getAttribute("href") === "#open_cookiebot") {
-                      // Prevent default action
+                    if (dialogOverlay.classList.contains("loading")) {
                       e.preventDefault();
-                      // Inform parent window to open cookiebot popup
-                      window.parent.postMessage("open_cookiebot", "*");
-                  }
-  
-                  // Check if the anchor link is a marketing cookie link
-                  if (a.getAttribute("href") === "#accept_marketing") {
-                      // Prevent default action
+                      return;
+                    }
+
+                    // Check if the anchor link is a cookiebot link
+                    if (a.getAttribute("href") === "#open_cookiebot") {
                       e.preventDefault();
-                      // Inform parent window to accept marketing cookies
-                      window.parent.postMessage("accept_marketing", "*");
-                  }
+                      window.parent.Cookiebot.show();
+                    }
+
+                    // Check if the anchor link is about accepting required cookies
+                    if (a.getAttribute("href") === "#accept_required_cookies") {
+                      dialogOverlay.classList.add("loading");
+                      e.preventDefault();
+
+                      // Get the required consents from the iframe
+                      var requiredConsents = "${requiredConsents}";
+                      var optinPreferences = requiredConsents.includes("preferences") ? true : ${Cookiebot.consent.preferences};
+                      var optinStatistics = requiredConsents.includes("statistics") ? true : ${Cookiebot.consent.statistics};
+                      var optinMarketing =  requiredConsents.includes("marketing") ? true : ${Cookiebot.consent.marketing};
+
+                      window.parent.Cookiebot.submitCustomConsent(
+                          optinPreferences,
+                          optinStatistics,
+                          optinMarketing
+                      );
+                    }
                   });
-              });
-          }
-          </script>`;
+                });
+              }
+            </script>
+            `;
   }
 
   /**
    * Sets up various event listeners for handling Cookiebot events and iframe messages.
    */
   setupEventListeners() {
-    const that = this;
-    // Check for Cookiebot onAccept event and if marketing cookies are not accepted
-    window.addEventListener('CookiebotOnAccept', function (e) {
-      if (!Cookiebot.consent.marketing) {
-        that.checkConsentAndUpdateIframes();
-      }
-    });
+    window.addEventListener('CookiebotOnAccept', this.checkConsentAndUpdateIframes.bind(this));
+    window.addEventListener('CookiebotOnDecline', this.checkConsentAndUpdateIframes.bind(this));
 
-    // Check for Cookiebot onDecline event and if marketing cookies are not accepted
-    window.addEventListener('CookiebotOnDecline', function (e) {
-      if (!Cookiebot.consent.marketing) {
-        that.checkConsentAndUpdateIframes();
-      }
-    });
-
-    // When the user navigates back in history, check for consent and update marketing iframes
     window.addEventListener('popstate', this.checkConsentAndUpdateIframes.bind(this));
-
-    // When the document is loaded, check for consent and update marketing iframes
     window.addEventListener('load', this.onDocumentLoad.bind(this));
   }
 
@@ -289,24 +405,6 @@ class CookiebotEmbeds {
     }
 
     this.checkConsentAndUpdateIframes();
-    window.addEventListener('message', this.handleIframeMessages.bind(this));
-  }
-
-  /**
-   * Handles messages received from iframes, particularly those related to Cookiebot actions.
-   * @param {Event} e - The event object containing the message data.
-   */
-  handleIframeMessages(e) {
-    if (e.data === 'open_cookiebot') {
-      Cookiebot.show();
-    }
-    if (e.data === 'accept_marketing') {
-      Cookiebot.submitCustomConsent(
-        Cookiebot.consent.preferences,
-        Cookiebot.consent.statistics,
-        true
-      );
-    }
   }
 }
 

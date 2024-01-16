@@ -1,6 +1,6 @@
 # CookiebotEmbeds (`cookiebot-embeds`)
 
-![Asking user to accept marketing cookies to play youtube video.](screenshot.png)
+![Asking user to accept required cookies to view this sources from embeedded source within the iframe.](screenshot.png)
 `cookiebot-embeds` is a JavaScript library designed to manage marketing cookie consents in web applications, particularly for embedded content such as YouTube videos and other iframe embeds. It ensures compliance with GDPR and similar data protection regulations by dynamically updating embedded content based on the user's cookie consent status.
 
 ## Features
@@ -48,10 +48,14 @@ The library accepts a configuration object with the following options:
 - `showSourceURL`: (boolean) Determines if the source URL should be shown. Default: true.
 - `headingText`: (object) Text for various headings based on content type.
     - `default`: (string) Default heading text.
-    - `youtube`: (string) YouTube-specific heading text.
+    - `youtube`: (string) YouTube-specific heading text with URL origin that contains "youtube" (this targets youtube.com, youtube-nocookie.com).
+- `cookieCategoriesTitle`: (object) Text for various cookie categories.
+    - `preferences`: (string) Text for the preferences cookie category.
+    - `statistics`: (string) Text for the statistics cookie category.
+    - `marketing`: (string) Text for the marketing cookie category.
 - `acceptButtonText`: (string) Text for the accept cookies button.
 - `openCookiebotSettingsButtonText`: (string) Text for the button to open Cookiebot settings.
-- `background`: (string) Background color of the message overlay.
+- `background`: (string) Background color of the iframe message overlay.
 - `textColor`: (string) Text color of the message.
 - `buttonBackgroundColor`: (string) Background color of the button.
 - `buttonBackgroundColorHover`: (string) Hover background color of the button.
@@ -65,8 +69,13 @@ Here is an example of how you might configure the library:
 const embeds = new CookiebotEmbeds({
     showSourceURL: true,
     headingText: {
-        default: "To access this content, please enable marketing cookies.",
+        default: "To access this content, please enable [REQUIRED_COOKIES] cookies.",
         youtube: "To play this video, please enable marketing cookies required by YouTube."
+    },
+    cookieCategoriesTitle: {
+        preferences: "Preferences",
+        statistics: "Statistics",
+        marketing: "Marketing"
     },
     acceptButtonText: "Accept marketing cookies",
     openCookiebotSettingsButtonText: "Open Cookiebot Settings",
@@ -74,7 +83,6 @@ const embeds = new CookiebotEmbeds({
     textColor: "white",
     buttonBackgroundColor: "#88b364",
     buttonBackgroundColorHover: "#6e9e4f",
-    buttonTextColor: "white",
     gap: "15px",
     customCSS: `
         body {
@@ -86,19 +94,25 @@ const embeds = new CookiebotEmbeds({
 
 ## Default Configuration Values
 
-`cookiebot-embeds` is pre-configured with default values to ensure ease of use right out of the box. These values are designed to cover common use cases and can be overridden by passing a custom configuration object.
+`cookiebot-embeds` is pre-configured with default values to ensure ease of use right out of the box. These values are designed to cover common use cases and can be overridden by passing a custom configuration object. The text `[REQUIRED_COOKIES]` string lists down the dynamic cookies that user needs to be accept to view the dynamic embed.
 
-Here are the default values for each configuration option:
+Here are the default values for each configuration option: 
 
 - `showSourceURL`: `true`
   - By default, the source URL of the embed is shown. This can be helpful for transparency and trust.
 
 - `headingText`: 
-  - `default`: "To access this content, please enable marketing cookies."
+  - `default`: "Enable [REQUIRED_COOKIES] cookies on Cookiebot settings to view this content."
   - `youtube`: "To play this video, please enable marketing cookies required by YouTube."
-  - These texts are displayed as headings on the consent overlay, depending on the content type.
+  - These texts are displayed as headings on the consent overlay, depending on the content source origin string.
 
-- `acceptButtonText`: "Accept marketing cookies"
+- `cookieCategoriesTitle`: 
+  - `preferences`: "Preferences"
+  - `statistics`: "Statistics"
+  - `marketing`: "Marketing"
+  - Text for various cookie categories.
+
+- `acceptButtonText`: "Accept required cookies"
   - The default text for the button to accept marketing cookies.
 
 - `openCookiebotSettingsButtonText`: "Open Cookiebot Settings"
@@ -128,11 +142,9 @@ Here are the default values for each configuration option:
 ### Overriding Default Values
 
 To override these defaults, pass a custom configuration object when creating an instance of `CookiebotEmbeds`. For example:
-
 ```javascript
 const embeds = new CookiebotEmbeds({
     showSourceURL: false, // Hides the source URL
     // ... other custom configurations
 });
 ```
-

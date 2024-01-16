@@ -1,20 +1,30 @@
-(function(o,i){typeof exports=="object"&&typeof module<"u"?module.exports=i():typeof define=="function"&&define.amd?define(i):(o=typeof globalThis<"u"?globalThis:o||self,o.CookiebotEmbeds=i())})(this,function(){"use strict";class o{constructor(t={}){this.config={showSourceURL:!0,headingText:{default:"To access this content, please enable marketing cookies.",youtube:"To play this video, please enable marketing cookies required by YouTube."},acceptButtonText:"Accept marketing cookies",openCookiebotSettingsButtonText:"Open Cookiebot Settings",background:"rgba(0, 0, 0, 0.7)",textColor:"white",buttonBackgroundColor:"#88b364",buttonBackgroundColorHover:"#6e9e4f",buttonTextColor:"white",gap:"15px",customCSS:"",...t},this.init()}init(){this.checkConsentAndUpdateIframes(),this.setupEventListeners()}checkConsentAndUpdateIframes(){if(typeof Cookiebot<"u"&&Cookiebot&&"consent"in Cookiebot&&Cookiebot.consent&&"marketing"in Cookiebot.consent&&!Cookiebot.consent.marketing){let t=document.querySelectorAll("iframe.consent-frame, iframe.cookieconsent-optin-marketing, iframe[data-src*='youtube.com/embed'],[data-src*='youtube-nocookie.com/embed']");t.forEach(e=>{if(!e.hasAttribute("srcdoc")){let n=e.getAttribute("src")||e.getAttribute("data-cookieblock-src")||e.getAttribute("data-src");e.srcdoc=this.createIframeSourceDocument(n),e.style.display="block"}}),window.addEventListener("CookiebotOnAccept",function(e){Cookiebot.consent.marketing&&t.forEach(n=>{n.removeAttribute("srcdoc")})})}}createIframeSourceDocument(t){const e=this.config;if(!t)return"";let n=new URL(t).hostname,r=e.showSourceURL&&t?`<a href="${t}" class="source" target="_blank" rel="nofollow noopener" aria-label="Open in new tab">${t}</a>`:"",a=e.headingText.default;return Object.keys(e.headingText).some(s=>{if(n.includes(s))return a=e.headingText[s]}),`<div role="dialog" aria-labelledby="cookiebot_marketing_required" id="info">
-              <h1 id="cookiebot_marketing_required" class="heading">${a}</h1>
-              <div style="display: flex; flex-flow: row wrap; gap: inherit; justify-content: start;">
-                  <a href="#accept_marketing" class="btn btn--accept-marketing">${e.acceptButtonText}</a>
-                  <a href="#open_cookiebot" class="btn btn--open-settings">${e.openCookiebotSettingsButtonText}</a>
-              </div>
-          </div>
-          ${r}
-          <style>
-              html, body {
-                  display: flex;
-                  min-height: 100%;
-              }
-  
-              body {
+(function(r,c){typeof exports=="object"&&typeof module<"u"?module.exports=c():typeof define=="function"&&define.amd?define(c):(r=typeof globalThis<"u"?globalThis:r||self,r.CookiebotEmbeds=c())})(this,function(){"use strict";class r{constructor(o={}){const i={showSourceURL:!0,headingText:{default:"Enable [REQUIRED_COOKIES] cookies on Cookiebot settings to view this content.",youtube:"To play this video, please enable marketing cookies required by YouTube."},cookieCategoriesTitle:{preferences:"Preferences",statistics:"Statistics",marketing:"Marketing"},acceptButtonText:"Accept required cookies",openCookiebotSettingsButtonText:"Open Cookiebot Settings",background:"rgba(0, 0, 0, 0.7)",textColor:"white",buttonBackgroundColor:"#88b364",buttonBackgroundColorHover:"#6e9e4f",buttonTextColor:"white",gap:"15px",customCSS:""};this.config={...i,...o,headingText:{...i.headingText,...o.headingText},cookieCategoriesTitle:{...i.cookieCategoriesTitle,...o.cookieCategoriesTitle}},this.init()}init(){this.checkConsentAndUpdateIframes(),this.setupEventListeners()}checkConsentAndUpdateIframes(){const o=this;if(typeof Cookiebot<"u"&&Cookiebot&&"consent"in Cookiebot&&Cookiebot.consent&&"preferences"in Cookiebot.consent&&"statistics"in Cookiebot.consent&&"marketing"in Cookiebot.consent){const i=document.querySelectorAll("iframe[data-cookieconsent]"),e=t=>t.filter(n=>!Cookiebot.consent[n]);i.forEach(t=>{if(t.hasAttribute("data-cookieconsent")){const n=e(t.getAttribute("data-cookieconsent").split(",")),s=t.getAttribute("src")||t.getAttribute("data-cookieblock-src")||t.getAttribute("data-src");n.every(a=>Cookiebot.consent[a])||(t.setAttribute("srcdoc",o.createIframeSourceDocument(s,n)),setTimeout(()=>{t.style.display="block"},150))}}),window.addEventListener("CookiebotOnAccept",function(){let t=0;i.forEach(n=>{e(n.getAttribute("data-cookieconsent").split(",")).every(a=>Cookiebot.consent[a])?n.removeAttribute("srcdoc"):t++}),t>0&&o.checkConsentAndUpdateIframes()})}}createIframeSourceDocument(o,i=[]){const e=this.config;if(!o)return"";let t=new URL(o).hostname,n=e.showSourceURL&&o?`<a href="${o}" class="source" target="_blank" rel="nofollow noopener" aria-label="Open in new tab">${o}</a>`:"",s=e.headingText.default;if(Object.keys(e.headingText).some(a=>{if(t.includes(a))return s=e.headingText[a]}),s&&s.includes("[REQUIRED_COOKIES]")&&i){let a=i.map(d=>e.cookieCategoriesTitle[d]);s=s.replace("[REQUIRED_COOKIES]",i&&i.length>1?a.join(", ").replace(/,(?=[^,]*$)/," &"):a[0])}return`<div role="dialog" aria-labelledby="cookiebot_marketing_required" id="info">
+                <h1 id="cookiebot_marketing_required" class="heading">${s}</h1>
+                <div style="display: flex; flex-flow: row wrap; gap: calc(${e.gap} - (${e.gap} / 2)); justify-content: start;">
+                    <a href="#accept_required_cookies" class="btn btn--accept-required-cookies">
+                      ${e.acceptButtonText}
+                    </a>
+                    <a href="#open_cookiebot" class="btn btn--open-settings">${e.openCookiebotSettingsButtonText}</a>
+                </div>
+            </div>
+            <div class="loading__overlay" aria-hidden="true">
+              <svg class="loading__overlay--icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M10.72 19.9a8 8 0 0 1-6.5-9.79 7.77 7.77 0 0 1 6.18-5.95 8 8 0 0 1 9.49 6.52A1.54 1.54 0 0 0 21.38 12h.13a1.37 1.37 0 0 0 1.38-1.54 11 11 0 1 0-12.7 12.39A1.54 1.54 0 0 0 12 21.34a1.47 1.47 0 0 0-1.28-1.44Z"><animateTransform attributeName="transform" dur="0.75s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"/></path></svg>
+            </div>
+            ${n}
+            <style>
+                * {
+                  box-sizing: border-box;
+                }
+
+                html {
+                    height: 100%;
+                }
+                
+                body {
+                  margin: 0;
                   width: 100%;
-                  margin: 32px 20px;
+                  display: flex;
+                  padding: 32px 12px;
                   justify-content: center;
                   align-items: center;
                   background-color: ${e.background};
@@ -23,39 +33,40 @@
                   font-family: sans-serif;
                   font-weight: 400;
                   line-height: 1.34;
-              }
-  
-              #info {
-                display: flex;
-                flex-direction: column;
-                gap: ${e.gap};
-                text-align: left;
-                max-width: 750px;
-              }
-  
-              a.source {
-                display: inline;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                max-width: 250px;
-                background: black;
-                font-size: 14px;
-                position: fixed;
-                top: 0;
-                left: 0;
-                padding: 5px 10px;
-                color: currentColor;
-                text-decoration: none;
-                opacity: .8;
-              }
-  
-              a.source:hover,
-              a.source:focus {
-                text-decoration: underline;
-              }
-  
-              .btn {
+                }
+    
+                #info {
+                  display: flex;
+                  flex-direction: column;
+                  gap: ${e.gap};
+                  text-align: left;
+                  max-width: 750px;
+                  overflow: hidden;
+                }
+    
+                a.source {
+                  display: inline;
+                  white-space: nowrap;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  max-width: 250px;
+                  background: black;
+                  font-size: 14px;
+                  position: fixed;
+                  top: 0;
+                  left: 0;
+                  padding: 5px 10px;
+                  color: currentColor;
+                  text-decoration: none;
+                  opacity: .8;
+                }
+    
+                a.source:hover,
+                a.source:focus {
+                  text-decoration: underline;
+                }
+    
+                .btn {
                   text-decoration: none; 
                   display: inline-flex;
                   font-family: sans-serif;
@@ -64,64 +75,116 @@
                   color: ${e.buttonTextColor};
                   transition: all 0.2s ease;
                   border: none;
-              }
-  
-              .btn:hover {
-                background: ${e.buttonBackgroundColorHover};
-              }
-  
-              .heading {
-                font-family: sans-serif;
-                margin: 0;
-                font-size: 20px;
-              }
-  
-              @media screen and (min-width: 768px) {
-                body {
-                  margin: 30px;
                 }
-  
-                .btn {
-                  padding: 12px 20px;
+    
+                .btn:hover {
+                  background: ${e.buttonBackgroundColorHover};
                 }
-  
-                .heading {
-                  font-size: 36px;
-                }
-              }
 
-              a:focus-visible, button:focus-visible {
-                outline: 2px solid #005fcc;
-                background-color: #eef;
-                color: #005fcc;
-                transition: outline 0.3s ease, background-color 0.3s ease;
-              }            
-              
-              ${e.customCSS}
-          </style>
-          <script>
-          // Listen for all hash based anchor links
-          var anchor = document.querySelectorAll('a:not(.source)[href^="#"]');
-          if (anchor && anchor.length > 0) {
-              anchor.forEach((a) => {
+                .btn.btn--accept-required-cookies.loading {
+                  cursor: wait;
+                }
+    
+                .heading {
+                  font-family: sans-serif;
+                  margin: 0;
+                  font-size: 18px;
+                }
+    
+                @media screen and (min-width: 400px) {
+                  body {
+                    padding: 40px 30px 30px;
+                    min-height: 100%;
+                  }
+                }
+
+                @media screen and (min-width: 768px) {    
+                  .btn {
+                    padding: 12px 20px;
+                  }
+    
+                  .heading {
+                    font-size: 36px;
+                  }
+                }
+  
+                a.btn:focus-visible {
+                  outline: 2px solid #005fcc;
+                  background-color: #eef;
+                  color: #005fcc;
+                  transition: outline 0.3s ease, background-color 0.3s ease;
+                }            
+
+                .loading__overlay {
+                  position: fixed;
+                  top: 0;
+                  left: 0;
+                  right: 0;
+                  bottom: 0;
+                  z-index: 999;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  opacity: 0;
+                  visibility: hidden;
+                  justify-content: center;
+                  align-items: center;
+                  transition: opacity 0.3s ease, visibility 0.3s ease;
+                  background-color: ${e.background};
+                  color: ${e.textColor};
+                }
+
+                .loading__overlay--icon {
+                  width: 10vw;
+                  height: 10vw;
+                }
+
+                .loading__overlay.loading {
+                  opacity: 0.92;
+                  visibility: visible;
+                }
+                
+                ${e.customCSS}
+            </style>
+            <script>
+              // Listen for all hash based anchor links
+              var dialogOverlay = document.querySelector(".loading__overlay");
+              var anchor = document.querySelectorAll('a:not(.source)[href^="#"]');
+
+              if (anchor && anchor.length) {
+                anchor.forEach((a) => {
                   // Add click event listener to all hash based anchor links
                   a.addEventListener("click", function (e) {
-                  // Check if the anchor link is a cookiebot link
-                  if (a.getAttribute("href") === "#open_cookiebot") {
-                      // Prevent default action
+                    if (dialogOverlay.classList.contains("loading")) {
                       e.preventDefault();
-                      // Inform parent window to open cookiebot popup
-                      window.parent.postMessage("open_cookiebot", "*");
-                  }
-  
-                  // Check if the anchor link is a marketing cookie link
-                  if (a.getAttribute("href") === "#accept_marketing") {
-                      // Prevent default action
+                      return;
+                    }
+
+                    // Check if the anchor link is a cookiebot link
+                    if (a.getAttribute("href") === "#open_cookiebot") {
                       e.preventDefault();
-                      // Inform parent window to accept marketing cookies
-                      window.parent.postMessage("accept_marketing", "*");
-                  }
+                      window.parent.Cookiebot.show();
+                    }
+
+                    // Check if the anchor link is about accepting required cookies
+                    if (a.getAttribute("href") === "#accept_required_cookies") {
+                      dialogOverlay.classList.add("loading");
+                      e.preventDefault();
+
+                      // Get the required consents from the iframe
+                      var requiredConsents = "${i}";
+                      var optinPreferences = requiredConsents.includes("preferences") ? true : ${Cookiebot.consent.preferences};
+                      var optinStatistics = requiredConsents.includes("statistics") ? true : ${Cookiebot.consent.statistics};
+                      var optinMarketing =  requiredConsents.includes("marketing") ? true : ${Cookiebot.consent.marketing};
+
+                      window.parent.Cookiebot.submitCustomConsent(
+                          optinPreferences,
+                          optinStatistics,
+                          optinMarketing
+                      );
+                    }
                   });
-              });
-          }
-          <\/script>`}setupEventListeners(){const t=this;window.addEventListener("CookiebotOnAccept",function(e){Cookiebot.consent.marketing||t.checkConsentAndUpdateIframes()}),window.addEventListener("CookiebotOnDecline",function(e){Cookiebot.consent.marketing||t.checkConsentAndUpdateIframes()}),window.addEventListener("popstate",this.checkConsentAndUpdateIframes.bind(this)),window.addEventListener("load",this.onDocumentLoad.bind(this))}onDocumentLoad(){if(typeof Cookiebot>"u")return console.warn("Cookiebot is not loaded. Please add the Cookiebot script to the page.");this.checkConsentAndUpdateIframes(),window.addEventListener("message",this.handleIframeMessages.bind(this))}handleIframeMessages(t){t.data==="open_cookiebot"&&Cookiebot.show(),t.data==="accept_marketing"&&Cookiebot.submitCustomConsent(Cookiebot.consent.preferences,Cookiebot.consent.statistics,!0)}}return o});
+                });
+              }
+            <\/script>
+            `}setupEventListeners(){window.addEventListener("CookiebotOnAccept",this.checkConsentAndUpdateIframes.bind(this)),window.addEventListener("CookiebotOnDecline",this.checkConsentAndUpdateIframes.bind(this)),window.addEventListener("popstate",this.checkConsentAndUpdateIframes.bind(this)),window.addEventListener("load",this.onDocumentLoad.bind(this))}onDocumentLoad(){if(typeof Cookiebot>"u")return console.warn("Cookiebot is not loaded. Please add the Cookiebot script to the page.");this.checkConsentAndUpdateIframes()}}return r});

@@ -1,9 +1,19 @@
+interface HeadingTextConfig {
+  default?: string;
+  youtube?: string;
+  [key: string]: string | undefined;
+}
+
+interface CookieCategoriesTitleConfig {
+  preferences?: string;
+  statistics?: string;
+  marketing?: string;
+}
+
 interface CustomConfig {
   showSourceURL?: boolean;
-  headingText?: {
-    default?: string;
-    youtube?: string;
-  };
+  headingText?: HeadingTextConfig;
+  cookieCategoriesTitle?: CookieCategoriesTitleConfig;
   acceptButtonText?: string;
   openCookiebotSettingsButtonText?: string;
   background?: string;
@@ -17,13 +27,18 @@ interface CustomConfig {
 
 class CookiebotEmbeds {
   private config: CustomConfig;
+
   constructor(customConfig?: CustomConfig);
+
   init(): void;
+
   checkConsentAndUpdateIframes(): void;
-  createIframeSourceDocument(source: string): string;
+
+  createIframeSourceDocument(source: string, requiredConsents: string[]): string;
+
   setupEventListeners(): void;
+
   onDocumentLoad(): void;
-  handleIframeMessages(e: Event): void;
 }
 
 export default CookiebotEmbeds;
