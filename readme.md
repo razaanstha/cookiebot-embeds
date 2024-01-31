@@ -19,6 +19,15 @@
 
 - **Enhanced User Experience**: Focuses on providing a non-intrusive yet clear consent management process, improving overall user experience while navigating through embedded content and cookie consent dialogs.
 
+## Quick Usage Guide
+Effortlessly add Cookiebot Embeds to your website by copying the script below right after the main Cookiebot code. This ensures privacy compliance by dynamically managing consent for iframe embeds and other content blocked by Cookiebot's autoblock feature, aligning with GDPR and privacy regulations quickly and efficiently.
+```html
+<script type="module" data-cookieconsent="ignore">
+    import CookiebotEmbeds from 'https://cdn.jsdelivr.net/npm/cookiebot-embeds@latest/dist/cookiebot-embeds.es.js';
+    new CookiebotEmbeds();
+</script>
+```
+
 ## Getting Started
 
 ### Prerequisites
