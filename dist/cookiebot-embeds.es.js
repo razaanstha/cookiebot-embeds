@@ -69,6 +69,8 @@ class d {
       const i = document.querySelectorAll("iframe[data-cookieconsent]"), e = (t) => t.filter((n) => !Cookiebot.consent[n]);
       i.forEach((t) => {
         if (t.hasAttribute("data-cookieconsent")) {
+          if (t.getAttribute("data-cookieconsent") == "ignore")
+            return;
           const n = e(
             t.getAttribute("data-cookieconsent").split(",")
           ), a = t.getAttribute("src") || t.getAttribute("data-cookieblock-src") || t.getAttribute("data-src");

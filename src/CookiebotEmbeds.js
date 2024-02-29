@@ -102,6 +102,11 @@ class CookiebotEmbeds {
 
       marketingIframes.forEach((iframe) => {
         if (iframe.hasAttribute('data-cookieconsent')) {
+          // Check if the iframe should be ignored and if so, skip it
+          if (iframe.getAttribute('data-cookieconsent') == 'ignore') {
+            return;
+          }
+
           // Show an info on iframe to enable all the cookies to display the iframe
           const requiredConsents = getNonConsentedCookieCategories(
             iframe.getAttribute('data-cookieconsent').split(',')
