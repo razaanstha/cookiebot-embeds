@@ -1,6 +1,6 @@
 {
   "name": "cookiebot-embeds",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "A library for managing external embeds when using Cookiebot to ask for consent within the iframe.",
   "main": "dist/cookiebot-embeds.umd.js",
   "module": "dist/cookiebot-embeds.es.js",

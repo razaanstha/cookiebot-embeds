@@ -162,8 +162,16 @@ class CookiebotEmbeds {
   createIframeSourceDocument(source, requiredConsents = []) {
     const cookiebotConsentConfig = this.config;
     if (!source) return '';
-    // get the host name of the source without subdomain
-    let sourceHost = new URL(source).hostname;
+
+    // get the host name of the source without subdomain and use the
+    let sourceHost = source;
+
+    // Check if the source URL is valid else use the source URL as it is
+    try {
+      let sourceHost = new URL(source).hostname;
+    } catch (error) {
+      // console.error('Error parsing the source URL', error);
+    }
 
     let sourceElement =
       cookiebotConsentConfig.showSourceURL && source

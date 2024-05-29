@@ -66,24 +66,24 @@ class d {
   checkConsentAndUpdateIframes() {
     const o = this;
     if (typeof Cookiebot < "u" && Cookiebot && "consent" in Cookiebot && Cookiebot.consent && "preferences" in Cookiebot.consent && "statistics" in Cookiebot.consent && "marketing" in Cookiebot.consent) {
-      const i = document.querySelectorAll("iframe[data-cookieconsent]"), e = (t) => t.filter((n) => !Cookiebot.consent[n]);
+      const i = document.querySelectorAll("iframe[data-cookieconsent]"), e = (t) => t.filter((a) => !Cookiebot.consent[a]);
       i.forEach((t) => {
         if (t.hasAttribute("data-cookieconsent")) {
           if (t.getAttribute("data-cookieconsent") == "ignore")
             return;
-          const n = e(
+          const a = e(
             t.getAttribute("data-cookieconsent").split(",")
-          ), a = t.getAttribute("src") || t.getAttribute("data-cookieblock-src") || t.getAttribute("data-src");
-          n.every((r) => Cookiebot.consent[r]) || (t.setAttribute("srcdoc", o.createIframeSourceDocument(a, n)), setTimeout(() => {
+          ), r = t.getAttribute("src") || t.getAttribute("data-cookieblock-src") || t.getAttribute("data-src");
+          a.every((n) => Cookiebot.consent[n]) || (t.setAttribute("srcdoc", o.createIframeSourceDocument(r, a)), setTimeout(() => {
             t.style.display = "block";
           }, 150));
         }
       }), window.addEventListener("CookiebotOnAccept", function() {
         let t = 0;
-        i.forEach((n) => {
+        i.forEach((a) => {
           e(
-            n.getAttribute("data-cookieconsent").split(",")
-          ).every((r) => Cookiebot.consent[r]) ? n.removeAttribute("srcdoc") : t++;
+            a.getAttribute("data-cookieconsent").split(",")
+          ).every((n) => Cookiebot.consent[n]) ? a.removeAttribute("srcdoc") : t++;
         }), t > 0 && o.checkConsentAndUpdateIframes();
       });
     }
@@ -98,22 +98,27 @@ class d {
     const e = this.config;
     if (!o)
       return "";
-    let t = new URL(o).hostname, n = e.showSourceURL && o ? `<a href="${o}" class="source" target="_blank" rel="nofollow noopener" aria-label="Open in new tab">${o}</a>` : "", a = e.headingText.default;
-    if (Object.keys(e.headingText).some((r) => {
-      if (t.includes(r))
-        return a = e.headingText[r];
-    }), a && a.includes("[REQUIRED_COOKIES]") && i) {
-      let r = i.map(
+    let t = o;
+    try {
+      let n = new URL(o).hostname;
+    } catch {
+    }
+    let a = e.showSourceURL && o ? `<a href="${o}" class="source" target="_blank" rel="nofollow noopener" aria-label="Open in new tab">${o}</a>` : "", r = e.headingText.default;
+    if (Object.keys(e.headingText).some((n) => {
+      if (t.includes(n))
+        return r = e.headingText[n];
+    }), r && r.includes("[REQUIRED_COOKIES]") && i) {
+      let n = i.map(
         (s) => e.cookieCategoriesTitle[s]
       );
-      a = a.replace(
+      r = r.replace(
         "[REQUIRED_COOKIES]",
         // add a comma after each required consent except the last one
-        i && i.length > 1 ? r.join(", ").replace(/,(?=[^,]*$)/, " &") : r[0]
+        i && i.length > 1 ? n.join(", ").replace(/,(?=[^,]*$)/, " &") : n[0]
       );
     }
     return `<div role="dialog" aria-labelledby="cookiebot_marketing_required" id="info">
-                <h1 id="cookiebot_marketing_required" class="heading">${a}</h1>
+                <h1 id="cookiebot_marketing_required" class="heading">${r}</h1>
                 <div style="display: flex; flex-flow: row wrap; gap: calc(${e.gap} - (${e.gap} / 2)); justify-content: start;">
                     <a href="#accept_required_cookies" class="btn btn--accept-required-cookies">
                       ${e.acceptButtonText}
@@ -124,7 +129,7 @@ class d {
             <div class="loading__overlay" aria-hidden="true">
               <svg class="loading__overlay--icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M10.72 19.9a8 8 0 0 1-6.5-9.79 7.77 7.77 0 0 1 6.18-5.95 8 8 0 0 1 9.49 6.52A1.54 1.54 0 0 0 21.38 12h.13a1.37 1.37 0 0 0 1.38-1.54 11 11 0 1 0-12.7 12.39A1.54 1.54 0 0 0 12 21.34a1.47 1.47 0 0 0-1.28-1.44Z"><animateTransform attributeName="transform" dur="0.75s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"/></path></svg>
             </div>
-            ${n}
+            ${a}
             <style>
                 * {
                   box-sizing: border-box;
