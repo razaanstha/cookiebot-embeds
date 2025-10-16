@@ -1,7 +1,7 @@
 # CookiebotEmbeds (`cookiebot-embeds`)
 
 ![Asking user to accept required cookies to view this sources from embeedded source within the iframe.](screenshot.png)
-`cookiebot-embeds` is a JavaScript library designed to manage marketing cookie consents in web applications, particularly for embedded content such as YouTube videos and other iframe embeds. It ensures compliance with GDPR and similar data protection regulations by dynamically updating embedded content based on the user's cookie consent status. Trusted and used by [Aviicii.com](https://avicii.com/) [AbbaTheMuseum](https://abbathemuseum.com)[RFSU](https://www.rfsu.com/), [Nordic Welfare](http://nordicwelfare.org/), and many more sites in EU. 
+`cookiebot-embeds` is a JavaScript library designed to manage marketing cookie consents in web applications, particularly for embedded content such as YouTube videos and other iframe embeds. It ensures compliance with GDPR and similar data protection regulations by dynamically updating embedded content based on the user's cookie consent status. Trusted and used by [Aviicii.com](https://avicii.com/) [AbbaTheMuseum](https://abbathemuseum.com) [RFSU](https://www.rfsu.com/), [Nordic Welfare](http://nordicwelfare.org/), and many more sites in EU. 
 
 ## Features
 
